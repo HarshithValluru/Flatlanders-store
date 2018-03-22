@@ -1,0 +1,9 @@
+.ng-dirty.ng-touched.ng-empty.ng-invalid.ng-invalid-required{
+    border-color : #EBE9ED;
+}
+.ng-dirty.ng-invalid{
+    border-color : red;
+}
+.ng-dirty.ng-valid{
+    border-color : green;
+}
