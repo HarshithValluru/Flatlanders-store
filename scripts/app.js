@@ -1,11 +1,18 @@
 var app=angular.module('store',[]);
 
 app.controller("StoreController",function($http,$scope){
-	this.products = gems;		
+	var gemProducts = this;
+	$http.post('http://localhost:3000/retrieve')
+		.then(function(response){
+			gemProducts.products = response.data;
+		},function(response){
+			
+		})
+	this.products = gems;
 });
 
 app.controller("PanelController",function($scope){
-	this.tab = 3;
+	this.tab = 1;
 	this.selectTab=function(setTab){
 		this.tab=setTab;
 	};
@@ -33,10 +40,6 @@ var gems = [
 	images : [
 		{
 			full : 'images/dodecahedron-01-full.jpg',
-			thumb: 'images/dodecahedron-01-full.jpg'
-		},
-		{
-			full : 'images/dodecahedron-02-full.jpg',
 			thumb: 'images/dodecahedron-02-full.jpg'
 		}
 	],
@@ -62,10 +65,6 @@ var gems = [
 		{
 			full : 'images/dodecahedron-02-full.jpg',
 			thumb: 'images/dodecahedron-02-full.jpg'
-		},
-		{
-			full : 'images/dodecahedron-01-full.jpg',
-			thumb: 'images/dodecahedron-01-full.jpg'
 		}
 	],
 	reviews :[

@@ -1,16 +1,23 @@
-var mongojs = require("mongojs");
-var express = require("express");
-//var cors = require("cors");
-var app = express();
-var server = app.listen(3000);
+const mongojs = require("mongojs");
+const express = require("express");
+const path = require('path');
+const ejs = require('ejs');
+const bodyParser = require('body-parser');
 
+// To sign up into MongoDB:
 var databaseUrl = "flatStore"; 
 var collections = ["gems"]
-var bodyParser = require('body-parser');
 var db = mongojs(databaseUrl, collections);
-//app.use(cors);
+
+var app = express();
+app.use(express.static(__dirname));
+app.engine('html', ejs.renderFile);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.get('/',(req,res)=>{
+	res.render('./flatlanders.html');
+});
 
 app.post('/retrieve',function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,4 +38,7 @@ app.use('/addReviews',function (req, res, next) {
 	});
 	res.json(req.body[1]);
 });
-console.log("Server is running");
+
+var server = app.listen(3000,()=>{
+	console.log("Server is running at port 3000..");
+});
