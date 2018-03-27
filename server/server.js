@@ -9,7 +9,11 @@ var collections = ["gems"]
 var db = mongojs(databaseUrl, collections);
 
 var app = express();
-app.use(express.static(__dirname+"/public"));
+
+var path = __dirname.substring(0,__dirname.length-6);
+app.use(express.static(path+"/public"));
+console.log(path);
+
 app.engine('html', ejs.renderFile);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -40,5 +44,5 @@ app.post('/addReviews',function (req, res, next) {
 });
 
 var server = app.listen(3000,()=>{
-	console.log("Server is running at port 3000");
+	console.log("Server is running at port 3000..");
 });
