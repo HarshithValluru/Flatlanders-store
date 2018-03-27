@@ -8,6 +8,9 @@ var databaseUrl = "flatStore";
 var collections = ["gems"]
 var db = mongojs(databaseUrl, collections);
 
+var {mongoose} = require('./db/mongoose');
+var {gems} = require('./models/gems');
+
 var app = express();
 app.use(express.static(__dirname+"/public"));
 app.engine('html', ejs.renderFile);
