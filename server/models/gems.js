@@ -38,5 +38,5 @@ var gemSchema = new mongoose.Schema({
     }]
 });
 
-var gems = mongoose.model("flatStore",gemSchema);
+var gems = mongoose.model("gems",gemSchema);
 module.exports = {gems};
