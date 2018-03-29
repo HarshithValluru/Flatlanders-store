@@ -3,13 +3,14 @@ const express = require("express");
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
 
+var port = process.env.PORT || 3000 ;
 // To sign up into MongoDB:
-var databaseUrl = "flatStore"; 
-var collections = ["gems"]
-var db = mongojs(databaseUrl, collections);
+// var databaseUrl = "flatStore"; 
+// var collections = ["gems"]
+// var db = mongojs(databaseUrl, collections);
 
-// var {mongoose} = require('./db/mongoose');
-// var {gems} = require('./models/gems');
+var {mongoose} = require('./server/db/mongoose');
+var {gems} = require('./server/models/gems');
 
 var app = express();
 app.use(express.static(__dirname+"/public"));
@@ -21,11 +22,23 @@ app.get('/',(req,res)=>{
 	res.render('./flatlanders.html');
 });
 
+app.post('/retrieve',(req,res)=>{
+    var newGem = new gems({
+        name : req.body.name
+    }).save().then( (doc) => res.send(doc),
+        (err) => res.status(400).send(err)
+    );
+});
+
 app.get('/retrieve',function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-	db.gems.find(function(err, testData) {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	gems.find().then((testData)=>{
+		console.log("testData::",testData);
 		res.send(testData);
-	});	
+	});
+	// db.gems.find(function(err, testData) {
+	// 	res.send(testData);
+	// });	
 });
 
 app.post('/addReviews',function (req, res, next) {
@@ -42,6 +55,6 @@ app.post('/addReviews',function (req, res, next) {
 	res.json(req.body[1]);
 });
 
-var server = app.listen(3000,()=>{
-	console.log("Server is running at port 3000");
+var server = app.listen(port,()=>{
+	console.log(`Server is running at port ${port}`);
 });

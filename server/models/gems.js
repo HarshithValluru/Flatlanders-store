@@ -1,19 +1,42 @@
 var mongoose = require('mongoose');
+const validator = require('validator');
 
-var Todo = mongoose.model("flatStore",{
-    text : {
-        type : String,
-        required : true,
-        minlength : 1,
-        trim : true
+var gemSchema = new mongoose.Schema({
+    name : {
+        type : String
     },
-    completed : {
-        type : Boolean,
-        default : false
+    price : {
+        type: Number
     },
-    completedAt : {
-        type : Number,
-        default : null
-    }
+    description : {
+        type : String
+    },
+    canPurchase :{
+        type : Boolean
+    },
+    reviews : [{
+        stars : {
+            type : Number,
+           //required : true
+        },
+        body : {
+            type : String,
+            minlength : 1,
+            //required : true
+        },
+        email:{
+            type : String,
+            //required : true,
+            trim : true,
+            minlength : 1,
+            unique : true,
+            validate:{
+                validator : validator.isEmail,
+                message : '{VALUE} is not a valid email.'
+            }
+        }
+    }]
 });
-module.exports = {Todo};
+
+var gems = mongoose.model("flatStore",gemSchema);
+module.exports = {gems};
