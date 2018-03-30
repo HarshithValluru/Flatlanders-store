@@ -2,15 +2,15 @@ const mongojs = require("mongojs");
 const express = require("express");
 const ejs = require('ejs');
 const bodyParser = require('body-parser');
+const lodash = require('lodash');
+const os = require('os');
 
-var port = process.env.PORT || 3000 ;
-// To sign up into MongoDB:
-// var databaseUrl = "flatStore"; 
-// var collections = ["gems"]
-// var db = mongojs(databaseUrl, collections);
+var port = process.env.PORT || 3001 ;
 
 var {mongoose} = require('./server/db/mongoose');
-var {gems} = require('./server/models/gems');
+var {gemStores} = require('./server/models/gemStores');
+var {gemDetails} = require('./server/models/insertInitialData');
+var username = os.userInfo().username;
 
 var app = express();
 app.use(express.static(__dirname+"/public"));
@@ -22,37 +22,40 @@ app.get('/',(req,res)=>{
 	res.render('./flatlanders.html');
 });
 
-app.post('/retrieve',(req,res)=>{
-    var newGem = new gems({
-        name : req.body.name
-    }).save().then( (doc) => res.send(doc),
-        (err) => res.status(400).send(err)
-    );
+//Use this only to insert Inital Data of gems. Else Comment it.
+app.get('/initialInsert',(req,res)=>{
+	gemStores.remove({}).then(()=>{
+		gemStores.insertMany(gemDetails).then((gems)=>{
+			res.send({gems,username});
+		});
+	});
 });
 
 app.get('/retrieve',function (req, res, next) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	gems.find().then((testData)=>{
-		console.log("testData::",testData);
-		res.send(testData);
+	gemStores.find().then((testData)=>{
+		res.send({testData,username});
 	});
-	// db.gems.find(function(err, testData) {
-	// 	res.send(testData);
-	// });	
 });
 
-app.post('/addReviews',function (req, res, next) {
+app.use('/addReviews',function (req, res, next) {
 	res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
 	res.setHeader("Access-Control-Allow-Credentials", "true");
 	res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-	res.setHeader('Access-Control-Allow-Origin', '*');	
-	db.gems.update({'name': req.body[0]},{$push :{'reviews':req.body[1]}},function(err,doc){
-		console.log("Successfully inserted");
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	console.log(req.body);
+	var body = lodash.pick(req.body,["name","reviews"]);
+	console.log("body::",body);
+	gemStores.findOneAndUpdate({name:body.name},{$push : {reviews : body.reviews}},{new : true})
+		.then((result)=>{
+		console.log("1)result::",result);
+		//res.send(result.reviews);
 	});
-	db.gems.update({ },{ $pull: { "reviews": { "stars": { "$exists": false } } } },{ "multi": true },function(err,doc){
-		//console.log("DEL");
+	gemStores.findOneAndUpdate({ },{ $pull: { "reviews": { "stars": { "$exists": false } } } },{ "multi": true })
+	.then((result)=>{
+		console.log("2)result::",result.reviews);
+		res.send(result.reviews);
 	});
-	res.json(req.body[1]);
 });
 
 var server = app.listen(port,()=>{

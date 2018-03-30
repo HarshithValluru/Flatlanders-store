@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 const validator = require('validator');
 
-var gemSchema = new mongoose.Schema({
+var gemStoreSchema = new mongoose.Schema({
     name : {
         type : String
     },
@@ -14,6 +14,9 @@ var gemSchema = new mongoose.Schema({
     canPurchase :{
         type : Boolean
     },
+    images : {
+        type : String
+    },
     reviews : [{
         stars : {
             type : Number,
@@ -24,12 +27,12 @@ var gemSchema = new mongoose.Schema({
             minlength : 1,
             //required : true
         },
-        email:{
+        author:{
             type : String,
             //required : true,
             trim : true,
             minlength : 1,
-            unique : true,
+            //unique : true,
             validate:{
                 validator : validator.isEmail,
                 message : '{VALUE} is not a valid email.'
@@ -38,5 +41,5 @@ var gemSchema = new mongoose.Schema({
     }]
 });
 
-var gems = mongoose.model("gems",gemSchema);
-module.exports = {gems};
+var gemStores = mongoose.model("gemStore",gemStoreSchema);
+module.exports = {gemStores};
